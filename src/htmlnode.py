@@ -16,14 +16,20 @@ class HTMLNode:
 
     @override
     def __repr__(self) -> str:
-        return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
+        return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
 
     def to_html(self) -> "HTMLNode":
-        raise NotImplementedError
+        raise NotImplementedError("to_html method not implemented")
 
     def props_to_html(self):
         htmlString: str = ""
         if not self.props is None:
+            count = 1
+            length = self.props.items().__len__()
             for k, v in self.props.items():
-                htmlString += f"{k} {v}"
+                if count < length:
+                    htmlString += f'{k}="{v}" '
+                else:
+                    htmlString += f'{k}="{v}"'
+                count += 1
         return htmlString
