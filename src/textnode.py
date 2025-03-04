@@ -3,7 +3,7 @@ from typing import Any, override
 
 
 class TextType(Enum):
-    NORMAL = "normal"
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
@@ -13,7 +13,7 @@ class TextType(Enum):
 
 class TextNode:
     def __init__(
-        self, text: str, text_type: TextType = TextType.NORMAL, url: str | None = None
+        self, text: str, text_type: TextType = TextType.TEXT, url: str | None = None
     ):
         self.text: str = text
         self.text_type: TextType = text_type

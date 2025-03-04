@@ -8,9 +8,9 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node")
         self.assertEqual(node.text, "This is a text node")
 
-    def test_text_type_normal_value(self):
-        node = TextNode("This is a text node", TextType.NORMAL)
-        self.assertEqual(node.text_type.value, "normal")
+    def test_text_type_text_value(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        self.assertEqual(node.text_type.value, "text")
 
     def test_text_type_bold_value(self):
         node = TextNode("This is a text node", TextType.BOLD)
@@ -47,8 +47,8 @@ class TestTextNode(unittest.TestCase):
         self.assertIsInstance(node, TextNode)
 
     def test_eq(self):
-        node = TextNode("This is a text node", TextType.NORMAL)
-        node2 = TextNode("This is a text node", TextType.NORMAL)
+        node = TextNode("This is a text node", TextType.TEXT)
+        node2 = TextNode("This is a text node", TextType.TEXT)
         self.assertEqual(node, node2)
 
     def test_not_eq_text(self):
@@ -57,7 +57,7 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node, node2)
 
     def test_not_eq_text_type(self):
-        node = TextNode("This is a text node", TextType.NORMAL)
+        node = TextNode("This is a text node", TextType.TEXT)
         node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertNotEqual(node, node2)
 
