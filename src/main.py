@@ -8,9 +8,16 @@ def main():
     )
     print(textnode)
     htmlnode = HTMLNode(
-        "p", "text", None, {"href": "https://www.google.com", "target": "_blank"}
+        "a", "text", None, {"href": "https://www.google.com", "target": "_blank"}
     )
-    print(htmlnode)
+    # print(htmlnode)
+
+    leafnode = LeafNode("a", "text", {"href": "https://www.google.com"})
+    # print(leafnode.to_html())
+
+    parentnode = ParentNode("b", [leafnode, leafnode])
+    grandparentnode = ParentNode("div", [parentnode])
+    print(grandparentnode.to_html())
 
 
 if __name__ == "__main__":
