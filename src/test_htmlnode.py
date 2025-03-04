@@ -3,7 +3,7 @@ import unittest
 from htmlnode import HTMLNode
 
 
-class TestTextNode(unittest.TestCase):
+class TestHTMLNode(unittest.TestCase):
     def test_defaults(self):
         htmlnode: HTMLNode = HTMLNode()
         self.assertEqual(htmlnode.tag, None)
@@ -36,7 +36,7 @@ class TestTextNode(unittest.TestCase):
             props={"href": "https://www.google.com", "target": "_blank"}
         )
         self.assertEqual(
-            htmlnode.props_to_html(), 'href="https://www.google.com" target="_blank"'
+            htmlnode.props_to_html(), ' href="https://www.google.com" target="_blank"'
         )
 
     def test_repr(self):
