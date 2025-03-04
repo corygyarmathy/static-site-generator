@@ -18,18 +18,12 @@ class HTMLNode:
     def __repr__(self) -> str:
         return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
 
-    def to_html(self) -> "HTMLNode":
+    def to_html(self):
         raise NotImplementedError("to_html method not implemented")
 
-    def props_to_html(self):
+    def props_to_html(self) -> str:
         htmlString: str = ""
         if not self.props is None:
-            count = 1
-            length = self.props.items().__len__()
             for k, v in self.props.items():
-                if count < length:
-                    htmlString += f'{k}="{v}" '
-                else:
-                    htmlString += f'{k}="{v}"'
-                count += 1
+                htmlString += f' {k}="{v}"'
         return htmlString
