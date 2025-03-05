@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, override
+from typing import override
 
 
 class TextType(Enum):
