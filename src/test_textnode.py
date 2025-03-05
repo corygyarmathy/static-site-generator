@@ -1,6 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType
+from split_nodes_delimiter import split_nodes_delimiter
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -76,6 +77,72 @@ class TestTextNode(unittest.TestCase):
         )
         printStr = "TextNode(This is some anchor text, link, https://www.boot.dev)"
         self.assertEqual(node.__repr__(), printStr)
+
+    def test_text_node_to_html_node_text(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_text_node_to_html_node_img(self):
+        node = TextNode("This is an image", TextType.IMAGE, "https://www.boot.dev")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertEqual(
+            html_node.props,
+            {"src": "https://www.boot.dev", "alt": "This is an image"},
+        )
+
+    def test_text_node_to_html_node_bold(self):
+        node = TextNode("This is bold", TextType.BOLD)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is bold")
+
+    def test_split_notes_delimiter_code(self):
+        node = TextNode("This is text with a `markdown element` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("markdown element", TextType.CODE),
+                TextNode(" word", TextType.TEXT),
+            ],
+        )
+
+    def test_split_notes_delimiter_bold(self):
+        node = TextNode("This is text with a **markdown element** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("markdown element", TextType.BOLD),
+                TextNode(" word", TextType.TEXT),
+            ],
+        )
+
+    def test_split_notes_delimiter_italic(self):
+        node = TextNode("This is text with a *markdown element* word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("markdown element", TextType.ITALIC),
+                TextNode(" word", TextType.TEXT),
+            ],
+        )
+
+    def test_split_notes_delimiter_image(self):
+        node = TextNode("This is an image", TextType.IMAGE, "https://www.boot.dev")
+        new_nodes = split_nodes_delimiter([node], "img", TextType.IMAGE)
+        self.assertEqual(
+            new_nodes,
+            [node],
+        )
 
 
 if __name__ == "__main__":
