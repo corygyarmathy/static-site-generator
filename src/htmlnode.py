@@ -27,3 +27,48 @@ class HTMLNode:
             for k, v in self.props.items():
                 htmlString += f' {k}="{v}"'
         return htmlString
+
+
+class LeafNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str | None,
+        value: str,
+        props: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(tag=tag, value=value, props=props)
+
+    @override
+    def to_html(self) -> str:
+        if self.value is None:
+            raise ValueError("LeafNode must have a value.")
+
+        if self.tag is None:
+            return self.value
+        else:
+            return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+
+class ParentNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str,
+        children: list["HTMLNode"],
+        props: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(tag=tag, value=None, children=children, props=props)
+
+    @override
+    def to_html(self) -> str:
+        if self.tag is None:
+            raise ValueError(f"{type(self)} must have a tag.")
+        if self.children is None:
+            raise ValueError(f"{type(self)} must have children.")
+
+        childhtml = "".join(map(lambda child: child.to_html(), self.children))
+
+        return f"<{self.tag}{self.props_to_html()}>{childhtml}</{self.tag}>"
+
+    @override
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
