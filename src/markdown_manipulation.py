@@ -31,13 +31,11 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
         if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue
-
         text = old_node.text
         img_matches = extract_markdown_images(text)
         if len(img_matches) == 0:
             new_nodes.append(old_node)
             continue
-
         for img_match in img_matches:
             img_text: str = img_match[0]
             img_url: str = img_match[1]
