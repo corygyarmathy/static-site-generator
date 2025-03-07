@@ -137,13 +137,13 @@ class TestTextNode(unittest.TestCase):
         )
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertListEqual(
+            new_nodes,
             [
                 TextNode("This is text with a ", TextType.TEXT),
                 TextNode("bolded word", TextType.BOLD),
                 TextNode(" and ", TextType.TEXT),
                 TextNode("another", TextType.BOLD),
             ],
-            new_nodes,
         )
 
     def test_split_notes_delimiter_italic(self):
@@ -231,6 +231,7 @@ class TestTextNode(unittest.TestCase):
         )
         new_nodes = split_nodes_image([node])
         self.assertListEqual(
+            new_nodes,
             [
                 TextNode("This is text with an ", TextType.TEXT),
                 TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
