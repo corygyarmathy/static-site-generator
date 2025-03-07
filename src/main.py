@@ -5,6 +5,7 @@ from markdown_manipulation import (
     split_nodes_link,
     text_to_textnodes,
 )
+from markdown_blocks import markdown_to_blocks
 from textnode import TextNode, TextType
 
 
