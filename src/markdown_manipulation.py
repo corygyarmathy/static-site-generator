@@ -48,7 +48,7 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
                 new_nodes.append(TextNode(sections[0], TextType.TEXT))
             new_nodes.append(TextNode(img_text, TextType.IMAGE, img_url))
             text = sections[1]
-        if text != "":
+        if text != "":  # Check for image, no text
             new_nodes.append(TextNode(text, TextType.TEXT))
     return new_nodes
             split_nodes = []
