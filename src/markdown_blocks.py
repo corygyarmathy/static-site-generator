@@ -1,7 +1,8 @@
 from enum import Enum
 import re
 
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, ParentNode
+from markdown_manipulation import text_to_textnodes
 
 
 class BlockType(Enum):
@@ -36,3 +37,25 @@ def block_to_block_type(markdown: str) -> BlockType:
         return BlockType.OLIST
 
     return BlockType.PARAGRAPH  # Else, paragraph
+
+
+def markdown_to_html_node(markdown: str) -> ParentNode:
+    blocks: list[str] = markdown_to_blocks(markdown)
+    children_nodes: list[HTMLNode] = []
+    for block in blocks:
+        match block_to_block_type(block):
+            case BlockType.PARAGRAPH:
+                text_nodes = text_to_textnodes(block)
+            case BlockType.HEADING:
+                pass
+            case BlockType.CODE:
+                pass
+            case BlockType.QUOTE:
+                pass
+            case BlockType.ULIST:
+                pass
+            case BlockType.OLIST:
+                pass
+
+    parent_node = ParentNode(tag="div", children=children_nodes, props=None)
+    return parent_node
