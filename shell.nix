@@ -12,11 +12,14 @@ pkgs.mkShell {
         # select Python packages here
         venvShellHook
         debugpy
+        pytest
       ]
     ))
   ];
   postVenvCreation = ''
-    pip install -r ${./requirements.txt}
+    if [ -f ./requirements.txt]; then
+      pip install -r ${./requirements.txt}
+    fi
   '';
   shellHook = ''
     venvShellHook
