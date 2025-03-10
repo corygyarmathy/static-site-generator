@@ -2,7 +2,8 @@ from enum import Enum
 import re
 
 from htmlnode import HTMLNode, ParentNode
-from markdown_manipulation import text_to_textnodes
+from markdown_manipulation import markdown_to_textnodes
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class BlockType(Enum):
@@ -12,7 +13,7 @@ class BlockType(Enum):
     HEADING = "heading"
     CODE = "code"
     QUOTE = "quote"
-    ULIST = "unordered list"
+    ULIST = "unordered_list"
     OLIST = "ordered_list"
 
 
@@ -34,11 +35,12 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     """
 
     blocks: list[str] = []
-    sections = markdown.split("\n\n")
+    sections: list[str] = markdown.split("\n\n")
     for section in sections:
+        section: str = section.strip()
         if section == "":
             continue
-        blocks.append(section.strip())
+        blocks.append(section)
     return blocks
 
 
@@ -89,19 +91,101 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
     blocks: list[str] = markdown_to_blocks(markdown)
     children_nodes: list[HTMLNode] = []
     for block in blocks:
-        match block_to_block_type(block):
+        block_type: BlockType = block_to_block_type(block)
+        match block_type:
+            # Functions:
+            # - Sanitising function: tuple: string to replace, string to replace with
+            # - text_to_children(text, process_inline_markdown = True): get TextNodes, generate children
             case BlockType.PARAGRAPH:
-                text_nodes = text_to_textnodes(block)
+                sanitised_block: str = block.replace("\n", " ")
+                para_children_nodes: list[HTMLNode] = []
+                text_nodes: list[TextNode] = markdown_to_textnodes(sanitised_block)
+                for text_node in text_nodes:
+                    para_children_nodes.append(text_node_to_html_node(text_node))
+                block_node: ParentNode = ParentNode("p", para_children_nodes, None)
+                children_nodes.append(block_node)
             case BlockType.HEADING:
-                pass
-            case BlockType.CODE:
-                pass
-            case BlockType.QUOTE:
-                pass
-            case BlockType.ULIST:
-                pass
-            case BlockType.OLIST:
-                pass
+                sanitised_block: str = block.replace("\n", " ")
+                strip_heading: str = sanitised_block.lstrip("# ")
+                para_children_nodes: list[HTMLNode] = []
+                text_nodes: list[TextNode] = markdown_to_textnodes(strip_heading)
+                # TODO: calculate heading_num from the first child TextNode, rather than the raw string
+                #       This is to allow for a generic function to be created, and only heading specific
+                #       behaviour to be present in this case.
+                heading_num: int = (
+                    sanitised_block.__len__() - strip_heading.__len__()
+                ) - 1
+                tag: str = f"h{heading_num}"
+                for text_node in text_nodes:
+                    para_children_nodes.append(text_node_to_html_node(text_node))
+                block_node: ParentNode = ParentNode(tag, para_children_nodes, None)
+                children_nodes.append(block_node)
 
-    parent_node = ParentNode(tag="div", children=children_nodes, props=None)
+            case BlockType.CODE:
+                para_children_nodes: list[HTMLNode] = []
+                # Cut first & last line using string index of '\n'
+                text: str = block[block.find("\n") + 1 : block.rfind("\n") + 1]
+                text_node: TextNode = TextNode(text, TextType.CODE, None)
+                html_node: HTMLNode = text_node_to_html_node(text_node)
+                block_node: ParentNode = ParentNode("pre", [html_node], None)
+                children_nodes.append(block_node)
+            case BlockType.QUOTE:
+                sanitised_block: str = block.replace("\n", " ")
+                sanitised_block: str = sanitised_block.replace("> ", "")
+                para_children_nodes: list[HTMLNode] = []
+                text_nodes: list[TextNode] = markdown_to_textnodes(sanitised_block)
+                for text_node in text_nodes:
+                    para_children_nodes.append(text_node_to_html_node(text_node))
+                block_node: ParentNode = ParentNode(
+                    "blockquote", para_children_nodes, None
+                )
+                children_nodes.append(block_node)
+            case BlockType.ULIST:
+                list_block: str = "".join(
+                    f"<li>{line}</li>" for line in block.splitlines()
+                )
+                list_block: str = list_block.replace("<li>- ", "<li>")
+                para_children_nodes: list[HTMLNode] = []
+                text_nodes: list[TextNode] = markdown_to_textnodes(list_block)
+                for text_node in text_nodes:
+                    para_children_nodes.append(text_node_to_html_node(text_node))
+                block_node: ParentNode = ParentNode("ul", para_children_nodes, None)
+                children_nodes.append(block_node)
+            case BlockType.OLIST:
+                starting_num: int = find_olist_occurrence(block, 0)
+                lines: list[str] = block.splitlines()
+                list_block: str = "".join(
+                    f"<li>{lines[i].lstrip(f'{starting_num + i}. ')}</li>"
+                    for i in range(lines.__len__())
+                )
+                para_children_nodes: list[HTMLNode] = []
+                text_nodes: list[TextNode] = markdown_to_textnodes(list_block)
+                for text_node in text_nodes:
+                    para_children_nodes.append(text_node_to_html_node(text_node))
+                block_node: ParentNode = ParentNode("ol", para_children_nodes, None)
+                children_nodes.append(block_node)
+
+    parent_node: ParentNode = ParentNode(tag="div", children=children_nodes, props=None)
     return parent_node
+
+
+def find_olist_occurrence(text: str, index: int = 0) -> int:
+    num: int = 0
+    matches: list[str] = re.findall(r"(\d+)\. ", text)
+    if matches[index] is not None:
+        num = int(matches[index])
+    return num
+
+
+# def str_replace(old_text, new_text, occurrences: int) -> str:
+
+
+# def find_first_olist_number(text: str) -> int:
+#     num: int = 0
+#     match: re.Match[str] | None = re.search(r"(\d+)\. ", text)
+#     if match is not None:
+#         num = int(match.group(1))
+#     return num
+
+# def add_tag_to_lines(text: str, tag: str):
+#     return "\n".join(f"{tag}{line}\{tag}" for line in text.splitlines())
