@@ -173,7 +173,7 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
     return matches
 
 
-def text_to_textnodes(text: str) -> list[TextNode]:
+def markdown_to_textnodes(text: str) -> list[TextNode]:
     """Converts (Markdown) string into list of TextNode(s) of correct TextType.
 
     Runs the string through the following functions to process it:

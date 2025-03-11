@@ -6,7 +6,7 @@ from markdown_manipulation import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
-    text_to_textnodes,
+    markdown_to_textnodes,
 )
 from textnode import TextNode, TextType, text_node_to_html_node
 from markdown_blocks import (
@@ -267,7 +267,7 @@ class TestTextNode(unittest.TestCase):
 
     def test_text_to_text_nodes(self):
         text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        new_nodes = text_to_textnodes(text)
+        new_nodes = markdown_to_textnodes(text)
 
         self.assertListEqual(
             new_nodes,
@@ -343,6 +343,7 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_block_type(block), BlockType.OLIST)
         block = "paragraph"
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
 
 if __name__ == "__main__":
     _ = unittest.main()

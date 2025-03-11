@@ -3,7 +3,7 @@ from markdown_manipulation import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
-    text_to_textnodes,
+    markdown_to_textnodes,
 )
 from markdown_blocks import markdown_to_blocks
 from textnode import TextNode, TextType
@@ -52,7 +52,7 @@ def main():
     new_single_image_nodes = split_nodes_image([single_image_node])
 
     text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    new_text_nodes = text_to_textnodes(text)
+    new_text_nodes = markdown_to_textnodes(text)
 
 
 if __name__ == "__main__":
