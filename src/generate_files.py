@@ -49,8 +49,8 @@ def generate_page(
     placeholders: dict[str, str] = {
         "{{ Title }}": title,
         "{{ Content }}": content_html,
-        'href="/': f'href"/{base_path}',
-        'src="/': f'src"/{base_path}',
+        'href="/': f'href="{base_path}',
+        'src="/': f'src="{base_path}',
     }
     html: str = template_html
 
