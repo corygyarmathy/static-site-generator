@@ -6,7 +6,9 @@ from markdown_blocks import markdown_to_html_node
 from markdown_manipulation import extract_markdown_title
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+def generate_page(
+    from_path: str, template_path: str, dest_path: str, base_path: str
+) -> None:
     """Generate a page using an incoming file, template, and destination path.
 
     All paths are expected to point to files, and not directories.
@@ -26,7 +28,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         FileNotFoundError: If files it's trying to read from don't exist.
         IOError: If it fails to write to files.
     """
-    chdir(get_git_root())
+    # chdir(get_git_root())
 
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     try:
@@ -44,7 +46,12 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
 
     content_html: str = markdown_to_html_node(md).to_html()
     title: str = extract_markdown_title(md)
-    placeholders: dict[str, str] = {"{{ Title }}": title, "{{ Content }}": content_html}
+    placeholders: dict[str, str] = {
+        "{{ Title }}": title,
+        "{{ Content }}": content_html,
+        'href="/': f'href"/{base_path}"',
+        'src="/': f'src"/{base_path}"',
+    }
     html: str = template_html
 
     for placeholder, replacement in placeholders.items():
@@ -61,7 +68,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
 
 
 def generate_pages_recursive(
-    content_dir_path: str, template_path: str, dest_dir_path: str
+    content_dir_path: str, template_path: str, dest_dir_path: str, base_path: str
 ) -> None:
     dir_items = listdir(content_dir_path)
     for item in dir_items:
@@ -69,8 +76,8 @@ def generate_pages_recursive(
         if path.isfile(source_path):  # File
             item = item.rsplit(".", 1)[0] + ".html"
             dest_path = path.join(dest_dir_path, item)
-            generate_page(source_path, template_path, dest_path)
+            generate_page(source_path, template_path, dest_path, base_path)
         else:  # Directory
             dest_path = path.join(dest_dir_path, item)
             mkdir(dest_path)
-            generate_pages_recursive(source_path, template_path, dest_path)
+            generate_pages_recursive(source_path, template_path, dest_path, base_path)
