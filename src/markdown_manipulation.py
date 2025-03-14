@@ -174,6 +174,29 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
 
 
 def markdown_to_textnodes(text: str) -> list[TextNode]:
+def extract_markdown_title(markdown: str) -> str:
+    """Finds the Markdown title (H1) in the string.
+
+    Expects only one title in the string.
+
+    Args:
+        markdown:
+            Markdown-formatted string.
+
+    Returns:
+        Title text, stripped of the preceeding '# ' and any
+        preceeding or trailing whitespace.
+
+    Raises:
+        ValueError: Expects to find one, and only one, title.
+    """
+
+    # Find title (H1). Alt is for titles of one char.
+    pattern: str = r"^# (\S.*\S|\S)\s*$"
+    matches = re.search(pattern, markdown, re.MULTILINE)
+    if matches is None:
+        raise ValueError("No title found in the markdown provided.")
+    return matches.group(1)
     """Converts (Markdown) string into list of TextNode(s) of correct TextType.
 
     Runs the string through the following functions to process it:
