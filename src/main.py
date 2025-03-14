@@ -7,9 +7,10 @@ import sys
 
 
 def main():
-    base_path = sys.argv[0]
-    if base_path == "":
-        base_path = "/"
+    base_path = "/"
+    if sys.argv.__len__() > 1:
+        if sys.argv[1] != "":
+            base_path = sys.argv[1]
     overwrite_directory_files("static", "docs")
     generate_pages_recursive("content", "template.html", "docs", base_path)
 
