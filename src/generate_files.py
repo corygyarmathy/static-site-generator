@@ -1,5 +1,6 @@
-from os import chdir, makedirs
-from os.path import dirname
+from os import chdir, listdir, makedirs, mkdir, path
+from os.path import dirname, join, splitext
+from shutil import copy
 from file_manipulation import get_git_root
 from markdown_blocks import markdown_to_html_node
 from markdown_manipulation import extract_markdown_title
@@ -47,7 +48,6 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     html: str = template_html
 
     for placeholder, replacement in placeholders.items():
-        print(html)
         html = html.replace(placeholder, replacement)
 
     dest_dir = dirname(dest_path)
@@ -58,3 +58,19 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
             _ = f.write(html)
     except IOError:
         raise IOError(f"Error writing to {dest_path}")
+
+
+def generate_pages_recursive(
+    content_dir_path: str, template_path: str, dest_dir_path: str
+) -> None:
+    dir_items = listdir(content_dir_path)
+    for item in dir_items:
+        source_path = path.join(content_dir_path, item)
+        if path.isfile(source_path):  # File
+            item = item.rsplit(".", 1)[0] + ".html"
+            dest_path = path.join(dest_dir_path, item)
+            generate_page(source_path, template_path, dest_path)
+        else:  # Directory
+            dest_path = path.join(dest_dir_path, item)
+            mkdir(dest_path)
+            generate_pages_recursive(source_path, template_path, dest_path)
