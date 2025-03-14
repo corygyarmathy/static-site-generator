@@ -127,7 +127,7 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     return new_nodes
 
 
-def extract_markdown_images(text: str) -> list[tuple[str, str]]:
+def extract_markdown_images(markdown: str) -> list[tuple[str, str]]:
     """Converts (Markdown) string into list of tuples(s) of strings.
 
     tuple[0] is the alt_text of the link.
@@ -146,11 +146,11 @@ def extract_markdown_images(text: str) -> list[tuple[str, str]]:
         markdown format in the given string input.
     """
     pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    matches = re.findall(pattern, text)
+    matches = re.findall(pattern, markdown)
     return matches
 
 
-def extract_markdown_links(text: str) -> list[tuple[str, str]]:
+def extract_markdown_links(markdown: str) -> list[tuple[str, str]]:
     """Converts (Markdown) string into list of tuples(s) of strings.
 
     tuple[0] is the alt_text of the image.
@@ -168,12 +168,11 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
         A list of tuples(s) containing the alt_text and URL to any images in
         markdown format in the given string input.
     """
-    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    matches = re.findall(pattern, text)
+    pattern: str = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, markdown)
     return matches
 
 
-def markdown_to_textnodes(text: str) -> list[TextNode]:
 def extract_markdown_title(markdown: str) -> str:
     """Finds the Markdown title (H1) in the string.
 
@@ -197,6 +196,9 @@ def extract_markdown_title(markdown: str) -> str:
     if matches is None:
         raise ValueError("No title found in the markdown provided.")
     return matches.group(1)
+
+
+def markdown_to_textnodes(markdown: str) -> list[TextNode]:
     """Converts (Markdown) string into list of TextNode(s) of correct TextType.
 
     Runs the string through the following functions to process it:
@@ -218,7 +220,7 @@ def extract_markdown_title(markdown: str) -> str:
         the text was arranged in the string input.
     """
 
-    nodes = [TextNode(text, TextType.TEXT, None)]
+    nodes = [TextNode(markdown, TextType.TEXT, None)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
